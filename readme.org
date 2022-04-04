@@ -1,0 +1,5 @@
+* About
+This is meant to collect benchmarking scripts and other odds and ends.
+
+* License
+MIT.

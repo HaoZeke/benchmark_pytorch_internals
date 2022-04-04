@@ -1,0 +1,13 @@
+* Efficient Zero Tensor Benchmarks
+
+These are all derived from a [[So this makes sense as definitely non ZT (other_ is from torch.randn )][master script original posted by Anjali]].
+
+** Usage
+This demands multiple builds (or different evironments). Keep to the same configuration. If running on a CUDA enabled system, modify the scripts for better results.
+#+begin_src bash
+micromamba activate pytorch_ztaddmm
+python bench_withZT.py
+micromamba activate pytorch_master
+python bench_withoutZT.py
+python benchComparer.py
+#+end_src
