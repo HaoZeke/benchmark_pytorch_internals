@@ -23,12 +23,12 @@ for device in ['cpu']:#, 'cuda']:
         mat2_ = torch.randn(*mat1_shape, dtype=dtype, device=device, requires_grad=True)
         with fwAD.dual_level():
             inp_dual_obj = fwAD.make_dual(inp_, torch.randn_like(inp_))
-            mat1_dual_obj = fwAD.make_dual(mat1_, torch.randn_like(mat1_))
-            mat2_dual_obj = fwAD.make_dual(mat2_, torch.randn_like(mat2_))
+            mat1_dual_obj = mat1_
+            mat2_dual_obj = mat2_
 
         def fn(inp, mat1, mat2):
             with fwAD.dual_level():
-                out=inp.addmm(mat1, mat2, alpha=0, beta=0.9)
+                out=inp.addmm(mat1, mat2)
 
         tasks = [("fn(inp_dual_obj, mat1_dual_obj, mat2_dual_obj)", "With ZT")]
         timers = [Timer(stmt=stmt, label=f"FWD mode AD input dtype:{dtype} device:{device}", sub_label=f"{(mat1_shape)}", description=desc, globals=globals()) for stmt, desc in tasks]
