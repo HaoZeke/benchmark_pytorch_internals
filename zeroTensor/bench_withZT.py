@@ -10,7 +10,7 @@ import torch.autograd.forward_ad as fwAD
 
 print('Using pytorch %s' % (torch.__version__))
 
-shapes = [(128, 128), (256, 256), (512, 512)]
+shapes = [(32, 32), (64, 64), (128, 128), (256, 256), (512, 512), (1024, 1024), (2048, 2048), (4096, 4096)]
 results = []
 repeats = 10
 device = 'cpu'
@@ -23,14 +23,20 @@ for device in ['cpu']:#, 'cuda']:
         mat2_ = torch.randn(*mat1_shape, dtype=dtype, device=device, requires_grad=True)
         with fwAD.dual_level():
             inp_dual_obj = fwAD.make_dual(inp_, torch.randn_like(inp_))
-            mat1_dual_obj = mat1_
-            mat2_dual_obj = mat2_
+            mat1_dual_obj = fwAD.make_dual(mat1_, torch.randn_like(mat1_))
+            mat2_dual_obj = fwAD.make_dual(mat2_, torch.randn_like(mat2_))
 
         def fn(inp, mat1, mat2):
             with fwAD.dual_level():
                 out=inp.addmm(mat1, mat2)
 
-        tasks = [("fn(inp_dual_obj, mat1_dual_obj, mat2_dual_obj)", "With ZT")]
+        # ZT --> Efficient Zero Tensors instead of undefined tensors
+        tasks = [
+            ("fn(inp_, mat1_, mat2_)", "ZT->inp, mat1, mat2"),
+            ("fn(inp_dual_obj, mat1_, mat2_)", "ZT->mat1, mat2"),
+            ("fn(inp_dual_obj, mat1_dual_obj, mat2_)", "ZT->mat2"),
+            ("fn(inp_dual_obj, mat1_dual_obj, mat2_dual_obj)", "No ZT"),
+        ]
         timers = [Timer(stmt=stmt, label=f"FWD mode AD input dtype:{dtype} device:{device}", sub_label=f"{(mat1_shape)}", description=desc, globals=globals()) for stmt, desc in tasks]
 
         for i, timer in enumerate(timers * repeats):
@@ -42,3 +48,6 @@ for device in ['cpu']:#, 'cuda']:
 
 with open('with_zt.pkl', 'wb') as f:
     pickle.dump(results, f)
+
+comparison = Compare(results)
+comparison.print()
