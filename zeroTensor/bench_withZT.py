@@ -35,6 +35,7 @@ for device in ['cpu']:#, 'cuda']:
             ("fn(inp_, mat1_, mat2_)", "ZT->inp, mat1, mat2"),
             ("fn(inp_dual_obj, mat1_, mat2_)", "ZT->mat1, mat2"),
             ("fn(inp_dual_obj, mat1_dual_obj, mat2_)", "ZT->mat2"),
+            ("fn(inp_, mat1_dual_obj, mat2_dual_obj)", "ZT->inp"),
             ("fn(inp_dual_obj, mat1_dual_obj, mat2_dual_obj)", "No ZT"),
         ]
         timers = [Timer(stmt=stmt, label=f"FWD mode AD input dtype:{dtype} device:{device}", sub_label=f"{(mat1_shape)}", description=desc, globals=globals()) for stmt, desc in tasks]

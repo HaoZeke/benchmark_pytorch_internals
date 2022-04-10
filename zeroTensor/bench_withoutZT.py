@@ -28,7 +28,10 @@ for device in ['cpu']:#, 'cuda']:
 
         def fn(inp, mat1, mat2):
             with fwAD.dual_level():
-                out=inp.addmm(mat1, mat2)
+                inp_dual_zero = fwAD.make_dual(inp_, torch.zeros_like(inp_))
+                mat1_dual_zero = fwAD.make_dual(mat1_, torch.zeros_like(mat1_))
+                mat2_dual_zero = fwAD.make_dual(mat2_, torch.zeros_like(mat2_))
+                out=torch.addmm(inp_dual_zero, mat1_dual_zero, mat2_dual_zero)
 
         # UDT --> Undefined tensors for tangents
         tasks = [

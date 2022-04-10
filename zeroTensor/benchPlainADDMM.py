@@ -26,7 +26,6 @@ for device in ['cpu']:#, 'cuda']:
             ("mezt.addmm(mezt, mezt)", "ZT->inp, mat1, mat2"),
             ("inp_.addmm(mezt, mezt)", "ZT->mat1, mat2"),
             ("inp_.addmm(mat1_, mezt)", "ZT->mat2"),
-            ("mezt.addmm(mat1_, mat2_)", "ZT->inp"),
             ("inp_.addmm(mat1_, mat2_)", "No ZT"),
         ]
         timers = [Timer(stmt=stmt, label=f"input dtype:{dtype} device:{device}", sub_label=f"{(mat1_shape)}",
